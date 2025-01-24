@@ -367,6 +367,12 @@
               <artifactId>lombok</artifactId>
               <optional>true</optional>
           </dependency>
+          
+          <!-- 常用工具库 -->
+          <dependency>
+              <groupId>com.google.guava</groupId>
+              <artifactId>guava</artifactId>
+          </dependency>
   
           <dependency>
               <groupId>org.springframework.boot</groupId>
@@ -375,6 +381,7 @@
           </dependency>
       </dependencies>
   </project>
+  
   ```
 
 ## 1.5、测试

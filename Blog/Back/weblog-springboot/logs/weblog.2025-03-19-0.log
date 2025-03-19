@@ -1,0 +1,7 @@
+2025-03-19 19:12:41.067 [main] INFO  com.cm.weblog.web.WeblogWebApplicationTests - Starting WeblogWebApplicationTests using Java 1.8.0_421 on PC-20230309ZUJK with PID 2264 (started by Administrator in D:\GitRepository\Project\Blog\Back\weblog-springboot\weblog-web)
+2025-03-19 19:12:41.068 [main] INFO  com.cm.weblog.web.WeblogWebApplicationTests - The following profiles are active: prod
+2025-03-19 19:12:41.790 [main] INFO  com.cm.weblog.web.WeblogWebApplicationTests - Started WeblogWebApplicationTests in 0.996 seconds (JVM running for 1.522)
+2025-03-19 19:12:41.899 [main] INFO  com.cm.weblog.web.WeblogWebApplicationTests - 这是一行 Info 级别日志
+2025-03-19 19:12:41.904 [main] WARN  com.cm.weblog.web.WeblogWebApplicationTests - 这是一行 Warn 级别日志
+2025-03-19 19:12:41.904 [main] ERROR com.cm.weblog.web.WeblogWebApplicationTests - 这是一行 Error 级别日志
+2025-03-19 19:12:41.904 [main] INFO  com.cm.weblog.web.WeblogWebApplicationTests - 这是一行带有占位符日志，作者：CM

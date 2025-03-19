@@ -3,16 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- 指定父项目为 weblog-springboot -->
     <parent>
         <groupId>com.cm</groupId>
         <artifactId>weblog-springboot</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <groupId>com.cm</groupId>
     <artifactId>weblog-web</artifactId>
     <name>weblog-web</name>
-    <description>weblog-web(入口项目，负责博客前台展示、打包也在这个模块负责)</description>
+    <description>weblog-web (入口项目，负责博客前台展示相关功能，打包也放在这个模块负责)</description>
 
     <dependencies>
         <dependency>
@@ -25,17 +25,19 @@
             <artifactId>weblog-module-admin</artifactId>
         </dependency>
 
+        <!-- Web 依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- 免写冗余的 Java 样板式代码 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
+        <!-- 单元测试 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -51,5 +53,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

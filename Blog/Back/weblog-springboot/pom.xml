@@ -6,47 +6,50 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- 将 Spring Boot 的版本号切换成 2.6 版本 -->
         <version>2.6.3</version>
-        <relativePath />
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>com.cm</groupId>
     <artifactId>weblog-springboot</artifactId>
     <version>${revision}</version>
     <name>weblog-springboot</name>
-    <description>前后端分离博客项目</description>
+    <!-- 项目描述 -->
+    <description>前后端分离博客 Weblog By CM</description>
 
+    <!-- 多模块项目父工程打包模式必须指定为 pom -->
     <packaging>pom</packaging>
 
-    <!-- 子模块管理-->
+    <!-- 子模块管理 -->
     <modules>
         <!-- 入口模块 -->
         <module>weblog-web</module>
-        <!-- Admin 后台管理功能模块 -->
+        <!-- 管理后台 -->
         <module>weblog-module-admin</module>
-        <!-- Common 通用功能模块 -->
+        <!-- 通用模块 -->
         <module>weblog-module-common</module>
     </modules>
 
-    <!-- 统一版本号管理-->
+
+    <!-- 版本号统一管理 -->
     <properties>
-        <!-- 项目版本号-->
+        <!-- 项目版本号 -->
         <revision>0.0.1-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Maven相关 -->
-        <maven.complier.source>${java.version}</maven.complier.source>
-        <maven.complier.target>${java.version}</maven.complier.target>
+        <!-- Maven 相关 -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!-- 依赖包版本 -->
         <lombok.version>1.18.28</lombok.version>
         <guava.version>31.1-jre</guava.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
-        <jackson.version>2.15.2</jackson.version>
     </properties>
 
-    <!-- 统一依赖管理-->
+    <!-- 统一依赖管理 -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -73,18 +76,11 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
             </dependency>
-
-            <!-- Jackson -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
-        <!-- 统一插件管理-->
+        <!-- 统一插件管理 -->
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -103,7 +99,7 @@
         </pluginManagement>
     </build>
 
-    <!-- 阿里云镜像-->
+    <!-- 使用阿里云的 Maven 仓库源，提升包下载速度 -->
     <repositories>
         <repository>
             <id>aliyunmaven</id>

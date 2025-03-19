@@ -1,4 +1,0 @@
-spring:
-  profiles:
-    # 默认激活开发环境
-    active: dev

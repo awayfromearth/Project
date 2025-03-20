@@ -1184,3 +1184,127 @@ public class TestController {
 
 - 请求开始日志：请求接口的描述信息，入参的 Json 数据，被请求类、方法；
 - 请求结束日志：请求接口出参 Json 数据，以及执行耗时；
+
+# 五、Spring Boot 通过 MDC 实现日志跟踪
+
+![img](https://img.quanxiaoha.com/quanxiaoha/169167740895427)
+
+本小节中，我们将在 Spring Boot 中通过 MDC 实现日志追踪功能。
+
+## 什么是 MDC ? 为什么需要它？
+
+MDC（Mapped Diagnostic Context）是 SLF4J 和 log4j 等日志框架提供的一种方案，它允许开发者将一些特定的数据（如用户ID、请求ID等）存储到当前线程的上下文中，使得这些数据可以在日志消息中使用。这对于跟踪多线程或高并发应用中的单个请求非常有用。
+
+**在高并发环境中，由于多个请求可能同时处理，日志消息可能会交错在一起**。使用MDC，我们可以*为每个请求分配一个唯一的标识，并将该标识添加到每条日志消息中，从而方便地区分和跟踪每个请求的日志*。
+
+## 开始动手
+
+### 日志切面中设置 MDC 值
+
+编辑 `ApiOperationLogAspect` 日志切面类，在 `doAround()` 方法中处理请求开始的时候, 将请求的跟踪标识放入MDC 中：
+
+```java
+// traceId 表示跟踪 ID， 值这里直接用的 UUID
+MDC.put("traceId", UUID.randomUUID().toString());
+```
+
+### 配置日志框架
+
+在 `logback-weblog.xml` 配置文件中，可以使用 `%X` 来引用MDC中的值。例如，要引用上述的 `traceId`，你可以这样配置：
+
+```xml
+[TraceId: %X{traceId}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n
+```
+
+完整内容如下 ：
+
+> ⚠️ 注意，这里日志输出路径改成了 Windows 系统路径，目的是为了等下测试日志是否能够正常输出 `traceId` 。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration >
+    <jmxConfigurator/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <!-- 应用名称 -->
+    <property scope="context" name="appName" value="weblog" />
+    <!-- 自定义日志输出路径，以及日志名称前缀 -->
+    <property name="LOG_FILE" value="D:\\IDEA_Projects\\weblog\\logs\\${appName}.%d{yyyy-MM-dd}"/>
+    <property name="FILE_LOG_PATTERN" value="[TraceId: %X{traceId}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
+    <!--<property name="CONSOLE_LOG_PATTERN" value="${FILE_LOG_PATTERN}"/>-->
+
+    <!-- 按照每天生成日志文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- 日志文件输出的文件名 -->
+        <FileNamePattern>${LOG_FILE}-%i.log</FileNamePattern>
+        <!-- 日志文件保留天数 -->
+        <MaxHistory>30</MaxHistory>
+        <!-- 日志文件最大的大小 -->
+        <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>10MB</maxFileSize>
+        </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <!-- 格式化输出：%d 表示日期，%thread 表示线程名，%-5level：级别从左显示 5 个字符宽度 %errorMessage：日志消息，%n 是换行符-->
+        <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- dev 环境（仅输出到控制台） -->
+    <springProfile name="dev">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+
+    <!-- prod 环境（仅输出到文件中） -->
+    <springProfile name="prod">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+</configuration>
+```
+
+### 清除 MDC 值
+
+在请求结束时，为了避免污染其他请求，还需要清除 MDC 中的值：
+
+```scss
+MDC.clear();
+```
+
+### 与 AOP 切面结合
+
+所以，`ApiOperationLogAspect` 切面类中需添加的代码如下：
+
+```java
+ /**
+     * 环绕
+     * @param joinPoint
+     * @return
+     * @throws Throwable
+     */
+    @Around("apiOperationLog()")
+    public Object doAround(ProceedingJoinPoint joinPoint) throws Throwable {
+        try {
+            MDC.put("traceId", UUID.randomUUID().toString());
+
+            ... 省略
+        } finally {
+            MDC.clear();
+        }
+    }
+```
+
+## 测试看看
+
+我们将 `application.yml` 中的 `profile` 改为 `prod` 环境，来测试一波日志文件是否含有 `traceId`。 重启项目，再次请求 `/test` 接口，然后查看日志：
+
+![img](https://img.quanxiaoha.com/quanxiaoha/169167638168455)
+
+可以看到请求日志中正确打印了 `traceId` ，有了它，就可以在查询日志的时候通过 `traceId` 来过滤出同一个请求的所有日志了。
+
